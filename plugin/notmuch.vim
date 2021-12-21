@@ -36,6 +36,7 @@ let g:notmuch_show_maps = {
 	\ '?':		'show_info()',
 	\ '.':		'show_copy_id()',
 	\ '<Tab>':	'show_next_msg()',
+	\ '<S-Tab>':	'show_prev_msg()',
 	\ '<Space>':	'show_message_tag("-inbox -unread")',
 	\ 'c':		'compose()',
 	\ }
@@ -123,6 +124,22 @@ ruby << EOF
 		r = m.body_start + 1
 		VIM::command("normal #{m.start}zt")
 		$curwin.cursor = r, c
+	end
+EOF
+endfunction
+
+function! s:show_prev_msg()
+ruby << EOF
+	r, c = $curwin.cursor
+	n = $curbuf.line_number
+	i = $messages.index { |m| n >= m.start && n <= m.end }
+	if i - 1 >= 0
+		m = $messages[i - 1]
+		if m
+			r = m.body_start + 1
+			VIM::command("normal #{m.start}zt")
+			$curwin.cursor = r, c
+		end
 	end
 EOF
 endfunction
